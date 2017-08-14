@@ -19,3 +19,5 @@ SOURCES += main.cpp\
 HEADERS  += MainWindow.h
 
 FORMS    += MainWindow.ui
+
+RC_ICONS = "port.ico"

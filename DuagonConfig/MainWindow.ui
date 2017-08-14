@@ -9,15 +9,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>613</width>
-    <height>476</height>
+    <width>660</width>
+    <height>442</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QTextBrowser" name="textBrowser">
+   <widget class="QTextBrowser" name="portManageTextView">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -31,9 +31,9 @@
     <property name="geometry">
      <rect>
       <x>430</x>
-      <y>110</y>
+      <y>150</y>
       <width>161</width>
-      <height>281</height>
+      <height>231</height>
      </rect>
     </property>
     <property name="title">
@@ -52,11 +52,24 @@
       <string>导入文指令</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_2">
+    <widget class="QPushButton" name="clearViewBtn">
      <property name="geometry">
       <rect>
        <x>50</x>
-       <y>80</y>
+       <y>70</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>清屏</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>120</y>
        <width>75</width>
        <height>23</height>
       </rect>
@@ -66,7 +79,7 @@
      </property>
     </widget>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>420</x>
@@ -120,14 +133,6 @@
      </item>
     </layout>
    </widget>
-  </widget>
-  <widget class="QToolBar" name="mainToolBar">
-   <attribute name="toolBarArea">
-    <enum>TopToolBarArea</enum>
-   </attribute>
-   <attribute name="toolBarBreak">
-    <bool>false</bool>
-   </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
