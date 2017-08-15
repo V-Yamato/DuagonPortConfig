@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QtSerialPort/QSerialPort>
 #include <QSerialPortInfo>
+#include <QTimer>
 
 namespace Ui {
 class MainWindow;
@@ -23,14 +24,17 @@ private slots:
     void clearTextView();
     void openPort();
     void closePort();
-//    void setCloseBtnEnable();
-//    void setOpenBtnDisable();
-//    void setCloseBtnDisable();
+    void commandFileOpen();
+
+    void portMesgShowOnView();
 
 private:
     Ui::MainWindow *ui;
     QSerialPort *port;
     QSerialPortInfo portInfo;
+    QTimer *timer;
+    QByteArray allData;
+    QByteArray receiveData;
 
 //    void setUpPort;
 

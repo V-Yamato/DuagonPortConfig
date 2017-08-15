@@ -1,10 +1,14 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
+#include <QDebug>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+
+    timer = new QTimer(this);
     ui->setupUi(this);
     ui->portInfoBtn->setEnabled(false);
     ui->openPortBtn->setEnabled(false);
@@ -17,6 +21,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->portInfoBtn,SIGNAL(clicked(bool)),this,SLOT(printPortInfo()));
     connect(ui->clearViewBtn,SIGNAL(clicked(bool)),this,SLOT(clearTextView()));
     connect(ui->openPortBtn,SIGNAL(clicked(bool)),this,SLOT(openPort()));
+    connect(ui->closePortBtn,SIGNAL(clicked(bool)),this,SLOT(closePort()));
+    connect(ui->commandFromFileBtn,SIGNAL(clicked(bool)),this,SLOT(commandFileOpen()));
+    connect(timer,SIGNAL(timeout()),this,SLOT(portMesgShowOnView()));
 
 }
 
@@ -44,14 +51,39 @@ void MainWindow::setOpenBtnEnable(){
 }
 
 void MainWindow::openPort(){
+
+    QByteArray commandArray;
+    char p[8]="ps -a\n";
+    char pp[24]="pc -t SINK -s 32 0x01\n";
+
+
     port = new QSerialPort(QSerialPortInfo::availablePorts().at(ui->portcomboBox->currentIndex()-1),this);
 
+
+
+
     if (port->open(QIODevice::ReadWrite)) {
+        port->setBaudRate (QSerialPort::Baud115200 );
+        port->setDataBits (QSerialPort::Data8 );
+        port->setStopBits (QSerialPort::OneStop );
+        port->setParity (QSerialPort::NoParity );
+        port->setFlowControl(QSerialPort::NoFlowControl);
+        connect(port,SIGNAL(readyRead()),this,SLOT(portMesgShowOnView()));
+
         ui->portcomboBox->setEnabled(false);
         ui->openPortBtn->setText("已连接");
         ui->openPortBtn->setEnabled(false);
         ui->closePortBtn->setEnabled(true);
         ui->portManageTextView->append(tr("连接%1成功!^_^").arg(port->portName()));
+//            port->QSerialPort::write(pp);
+            port->QSerialPort::write(p,8);
+
+
+//            port->readAll();
+//            qDebug()<<QString(port->readAll());
+//            qDebug()<<port->bytesAvailable();
+                timer->start(10000);
+//                ui->portManageTextView->append(QString(port->readAll()));
     }else {
         ui->portManageTextView->append(tr("连接%1失败!T_T").arg(port->portName()));
 
@@ -65,7 +97,54 @@ void MainWindow::closePort(){
     ui->closePortBtn->setEnabled(false);
     ui->portcomboBox->setEnabled(true);
     ui->portManageTextView->append(tr("断开%1成功!^_^").arg(port->portName()));
+    timer->stop();
+    delete port;
 }
+
+void MainWindow::commandFileOpen(){
+//    port->/*w*/
+    port->write("pc -t SINK -s 32 0x01\n");
+    ui->portManageTextView->append(QString(port->readAll()));
+//    port->writeData("")
+
+
+}
+
+void MainWindow::portMesgShowOnView(){
+
+//    QByteArray temp;QString strhex;
+//    if(port->bytesAvailable()>=7)
+//    {
+//        temp=port->readAll(); //全部读取
+//        QDataStream out(&temp,QIODevice::ReadWrite);
+//        while(!out.atEnd())
+//        {
+//            qint8 outchar=0;
+//            out>>outchar;
+//            QString str=QString("%1").arg(outchar&0xFF,2,16,QLatin1Char('0'));
+
+//                    strhex+=str;
+//        }
+//        qDebug()<<strhex;
+//    }
+
+//    QByteArray temp;
+//    if(port->bytesAvailable()>=7)
+//    {
+//        temp=port->readAll(); //全部读取
+
+//        qDebug()<<QString(temp);
+//    }
+    allData = receiveData.append(port->readAll());
+
+
+
+       ui->portManageTextView->append(QString(allData));
+
+
+
+}
+
 
 void MainWindow::clearTextView(){
     ui->portManageTextView->clear();
@@ -83,4 +162,9 @@ void MainWindow::printPortInfo(){
     ui->portManageTextView->append("vendorIdentifier:" + QString::number(portInfo.vendorIdentifier()));
 
 }
+
+
+
+
+
 
