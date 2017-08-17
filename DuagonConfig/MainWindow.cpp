@@ -1,5 +1,7 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
+#include <QFile>
+#include <QFileDialog>
 
 #include <QDebug>
 
@@ -54,7 +56,7 @@ void MainWindow::openPort(){
 
     QByteArray commandArray;
     char p[8]="ps -a\n";
-    char pp[24]="pc -t SINK -s 32 0x01\n";
+//    char pp[24]="pc -t SINK -s 32 0x01\n";
 
 
     port = new QSerialPort(QSerialPortInfo::availablePorts().at(ui->portcomboBox->currentIndex()-1),this);
@@ -102,9 +104,29 @@ void MainWindow::closePort(){
 }
 
 void MainWindow::commandFileOpen(){
-//    port->/*w*/
-    port->write("pc -t SINK -s 32 0x01\n");
-    ui->portManageTextView->append(QString(port->readAll()));
+    QString commandFileName = QFileDialog::getOpenFileName(this,tr("Open File"),"",tr("Txt files(*.txt)"));
+
+    if (!commandFileName.isEmpty()) {
+        QFile commandFile(commandFileName);
+        if (commandFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
+
+            while(!commandFile.atEnd()){
+                QByteArray line = commandFile.readLine();
+                qDebug() << QString(line);
+            }
+        }else{
+            qDebug() <<"file empty";
+
+        }
+    }
+
+
+
+
+
+
+//    port->write("pc -t SINK -s 32 0x01\n");
+//    ui->portManageTextView->append(QString(port->readAll()));
 //    port->writeData("")
 
 
@@ -137,12 +159,7 @@ void MainWindow::portMesgShowOnView(){
 //    }
     allData = receiveData.append(port->readAll());
 
-
-
-       ui->portManageTextView->append(QString(allData));
-
-
-
+    ui->portManageTextView->append(QString(allData));
 }
 
 
