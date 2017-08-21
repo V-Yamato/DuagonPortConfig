@@ -105,9 +105,11 @@ void MainWindow::commandFileOpen(){
         if (commandFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
             while(!commandFile.atEnd()){            
                 QByteArray line = commandFile.readLine();
-//                if (QString(line).startsWith()) {
+                if (QString(line).startsWith("#")) {
 
-//                }
+                }else{
+                    port->write(QString(line));
+                }
                 qDebug() << QString(line);
             }
         }else{
