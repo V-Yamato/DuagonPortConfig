@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/Picture/Icon">
+        <file>Error.ico</file>
+        <file>Port.ico</file>
+    </qresource>
+</RCC>

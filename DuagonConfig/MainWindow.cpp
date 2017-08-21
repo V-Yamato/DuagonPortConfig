@@ -2,6 +2,7 @@
 #include "ui_MainWindow.h"
 #include <QFile>
 #include <QFileDialog>
+#include <QMessageBox>
 
 #include <QDebug>
 
@@ -15,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->portInfoBtn->setEnabled(false);
     ui->openPortBtn->setEnabled(false);
     ui->closePortBtn->setEnabled(false);
+    ui->commandFromFileBtn->setEnabled(false);
     foreach (const QSerialPortInfo &portInfo, QSerialPortInfo::availablePorts()) {
         ui->portcomboBox->addItem(portInfo.portName());
     }
@@ -36,10 +38,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-//void MainWindow::setUpPort(){
-//    port->setBaudRate();
-
-//}
 
 //SLOT
 void MainWindow::setOpenBtnEnable(){
@@ -57,12 +55,7 @@ void MainWindow::openPort(){
     QByteArray commandArray;
     char p[8]="ps -a\n";
 //    char pp[24]="pc -t SINK -s 32 0x01\n";
-
-
     port = new QSerialPort(QSerialPortInfo::availablePorts().at(ui->portcomboBox->currentIndex()-1),this);
-
-
-
 
     if (port->open(QIODevice::ReadWrite)) {
         port->setBaudRate (QSerialPort::Baud115200 );
@@ -76,10 +69,10 @@ void MainWindow::openPort(){
         ui->openPortBtn->setText("已连接");
         ui->openPortBtn->setEnabled(false);
         ui->closePortBtn->setEnabled(true);
+        ui->commandFromFileBtn->setEnabled(true);
         ui->portManageTextView->append(tr("连接%1成功!^_^").arg(port->portName()));
 //            port->QSerialPort::write(pp);
             port->QSerialPort::write(p,8);
-
 
 //            port->readAll();
 //            qDebug()<<QString(port->readAll());
@@ -87,13 +80,14 @@ void MainWindow::openPort(){
                 timer->start(10000);
 //                ui->portManageTextView->append(QString(port->readAll()));
     }else {
-        ui->portManageTextView->append(tr("连接%1失败!T_T").arg(port->portName()));
-
+        showWarnningMesge(tr("连接%1失败!T_T").arg(port->portName()));
+//        ui->portManageTextView->append(tr("连接%1失败!T_T").arg(port->portName()));
     }
 }
 
 void MainWindow::closePort(){
     port->close();
+    ui->commandFromFileBtn->setEnabled(false);
     ui->openPortBtn->setEnabled(true);
     ui->openPortBtn->setText("打开串口");
     ui->closePortBtn->setEnabled(false);
@@ -109,21 +103,20 @@ void MainWindow::commandFileOpen(){
     if (!commandFileName.isEmpty()) {
         QFile commandFile(commandFileName);
         if (commandFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-
-            while(!commandFile.atEnd()){
+            while(!commandFile.atEnd()){            
                 QByteArray line = commandFile.readLine();
+//                if (QString(line).startsWith()) {
+
+//                }
                 qDebug() << QString(line);
             }
         }else{
-            qDebug() <<"file empty";
+            showWarnningMesge("文件打开失败 T_T");
 
         }
+    }else{
+        showWarnningMesge("文件为空或未选择文件 T_T");
     }
-
-
-
-
-
 
 //    port->write("pc -t SINK -s 32 0x01\n");
 //    ui->portManageTextView->append(QString(port->readAll()));
@@ -133,7 +126,6 @@ void MainWindow::commandFileOpen(){
 }
 
 void MainWindow::portMesgShowOnView(){
-
 //    QByteArray temp;QString strhex;
 //    if(port->bytesAvailable()>=7)
 //    {
@@ -144,12 +136,10 @@ void MainWindow::portMesgShowOnView(){
 //            qint8 outchar=0;
 //            out>>outchar;
 //            QString str=QString("%1").arg(outchar&0xFF,2,16,QLatin1Char('0'));
-
 //                    strhex+=str;
 //        }
 //        qDebug()<<strhex;
 //    }
-
 //    QByteArray temp;
 //    if(port->bytesAvailable()>=7)
 //    {
@@ -177,11 +167,15 @@ void MainWindow::printPortInfo(){
     ui->portManageTextView->append("serialNumber:" + portInfo.serialNumber());
     ui->portManageTextView->append("systemLocation:" + portInfo.systemLocation());
     ui->portManageTextView->append("vendorIdentifier:" + QString::number(portInfo.vendorIdentifier()));
-
 }
 
-
-
-
+void MainWindow::showWarnningMesge(QString mesg){
+    QMessageBox mesgBox;
+    mesgBox.setText(mesg);
+    mesgBox.setWindowTitle("出错啦");
+//    mesgBox.setWindowIcon(QIcon("Error.ico"));
+    mesgBox.setIcon(QMessageBox::Warning);
+    mesgBox.exec();
+}
 
 

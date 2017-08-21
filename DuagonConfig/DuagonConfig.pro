@@ -20,4 +20,7 @@ HEADERS  += MainWindow.h
 
 FORMS    += MainWindow.ui
 
-RC_ICONS = "port.ico"
+RC_ICONS = "Port.ico"
+
+RESOURCES += \
+    Icon.qrc

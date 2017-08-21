@@ -26,6 +26,9 @@ private slots:
     void closePort();
     void commandFileOpen();
 
+    void showWarnningMesge(QString mesg);
+
+
     void portMesgShowOnView();
 
 private:
@@ -35,8 +38,6 @@ private:
     QTimer *timer;
     QByteArray allData;
     QByteArray receiveData;
-
-//    void setUpPort;
 
 };
 
